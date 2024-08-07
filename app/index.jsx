@@ -6,49 +6,9 @@ import * as MediaLibrary from 'expo-media-library';
 // import {Audio} from 'expo-av';
 
 
-
-
-
-var styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius:10
-  },
-  cameraContainer: {
-    marginBottom:50,
-    width: 1100,
-    height: 618,
-    backgroundColor: 'blue',
-  },
-  fixedRatio: {
-    height: '100%',
-    width: '100%',
-  },
-  cameraButton: {
-    height:100,
-    width:200,
-    backgroundColor:'red'
-  }
-});
-
-
 export default function Index() {
 
-  useEffect(()=>{
-    (async  ()=>{
-      if(camera.current){
-            console.log('there is camera')
-            let x =  await camera.current.getAvailablePictureSizesAsync('16:9')
-            console.log('this is camera sizes available:',x)
-        }
-    })()
-  },[camera])
-
    const copyToMediaLibrary = async(cacheUri,folderName, fileName) => {
-    // if I recall the original create Asset was not working correctly, however I found a broken workaround where inputing an errored to: would place the 
     try{
         console.log('this is cacheuri', cacheUri)
         console.log('this is foldername', folderName)
@@ -57,17 +17,13 @@ export default function Index() {
         const asset = await MediaLibrary.createAssetAsync(FileSystem.documentDirectory+`/offlineStorage/${fileName}.mp4`)
         const deleteFile =  await FileSystem.deleteAsync(FileSystem.documentDirectory+`/offlineStorage/${fileName}.mp4`)
         // const asset = await MediaLibrary.createAssetAsync(cacheUri)
-
-
     }
     catch(e){console.log(e)}
 }
 
 
   let camera = useRef(null);
-  let [record, setRecord] = useState(null);
   let [permission, requestPermission] = useCameraPermissions();
-
   const audioStatus = Camera.requestMicrophonePermissionsAsync();
 
 
@@ -75,22 +31,19 @@ export default function Index() {
     console.log('start recording pressed')
     if (camera.current) {
     try{
-        
+        console.log(await camera.current.getAvailablePictureSizesAsync('16:9'))
         const data = await camera.current.recordAsync(
-          {quality: '2160p'}
+          {videoQuality: '2160p'}
           );
           console.log('this is camera return value::::', data)
-      setRecord(data.uri);
-      let fileN = 'test'+Math.floor(Math.random()*10)
-      let localSaveDir = null;
-      const x = await copyToMediaLibrary(data.uri,localSaveDir,fileN)
+          let fileN = 'test'+Math.floor(Math.random()*10)
+          let localSaveDir = null;
+          const x = await copyToMediaLibrary(data.uri,localSaveDir,fileN)
     }catch(e){console.log("Error at stop recording",e)};
-
     };
   }
 
   const stopVideo = async () => {
-    console.log('stop recording pressed')
     camera.current.stopRecording();
   };
 
@@ -136,4 +89,29 @@ export default function Index() {
     </View>
   );
 }
+
+var styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius:10
+  },
+  cameraContainer: {
+    marginBottom:50,
+    width: 1100,
+    height: 618,
+    backgroundColor: 'blue',
+  },
+  fixedRatio: {
+    height: '100%',
+    width: '100%',
+  },
+  cameraButton: {
+    height:100,
+    width:200,
+    backgroundColor:'red'
+  }
+});
 
