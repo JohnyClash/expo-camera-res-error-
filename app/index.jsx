@@ -35,7 +35,6 @@ export default function Index() {
         const data = await camera.current.recordAsync(
           {videoQuality: '2160p'}
           );
-          console.log('this is camera return value::::', data)
           let fileN = 'test'+Math.floor(Math.random()*10)
           let localSaveDir = null;
           const x = await copyToMediaLibrary(data.uri,localSaveDir,fileN)
